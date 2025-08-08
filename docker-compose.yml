@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  # magnitkarunbot:
+  #   build: ./
+
+  #   container_name: 'magnitkarunbot'
+  #   image: ulidev/diaversetestback
+
+  #   restart: always
+
+  #   # links:
+  #   #   - database:database
+
+  #   environment:
+  #     - MYSQL_HOST=193.111.117.78
+  #     - MYSQL_PORT=3306
+  #     - NODE_ENV=production
+
+  #   # depends_on:
+  #   #   - database
+
+  #   ports:
+  #     - '8080:8080'
+
+  # networks:
+  #   - app-network
+
+  database:
+    container_name: 'database'
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'MainDatabase'
+      MYSQL_USER: 'MainUser'
+      MYSQL_PASSWORD: 'dkfjsdofnsofnmno5j84584nknvkIDJFIDOFJODS&&&***&(hjhdfkldf'
+      MYSQL_ROOT_PASSWORD: 'root'
+      LANG: C.UTF-8
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - database:/var/lib/mysql
+    command:
+      [
+        'mysqld',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci',
+      ]
+  # networks:
+  #   - app-network
+
+volumes:
+  database:
+# networks:
+#   app-network:
