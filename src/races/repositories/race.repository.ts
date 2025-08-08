@@ -18,10 +18,6 @@ export class RaceRepository extends AbstractRepository<Race, RaceCreationArgs> {
     return created as Race;
   }
 
-  async findById(id: string, options?: FindOptions<Race>) {
-    return this.model.findByPk(id, options) as Promise<Race | null>;
-  }
-
   async count(options?: FindOptions<Race>) {
     return this.model.count(options);
   }

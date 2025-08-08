@@ -23,6 +23,11 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { CustomCacheModule } from './cache/cache.module';
 import { MenuModule } from './menu/menu.module';
 import { AppController } from './app.controller';
+import { RacesModule } from './races/reces.module';
+import { TrainersModule } from './trainers/trainers.module';
+import { PacemakersModule } from './pacemakers/pacemakers.module';
+import { ShopModule } from './shop/shop.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   controllers: [AppController],
@@ -69,6 +74,11 @@ import { AppController } from './app.controller';
     BackupsModule,
     CustomCacheModule,
     MenuModule,
+    RacesModule,
+    TrainersModule,
+    PacemakersModule,
+    ShopModule,
+    OrdersModule,
 
     // должно быть внизу из за приоритета выполнения
     ListenersLowModule,
