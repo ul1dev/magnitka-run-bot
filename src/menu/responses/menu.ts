@@ -24,5 +24,11 @@ export const menuMarkup = () => ({
         callback_data: 'pacemakers',
       },
     ],
+    [
+      {
+        text: 'Администраторы',
+        callback_data: 'admins',
+      },
+    ],
   ],
 });
