@@ -13,7 +13,6 @@ import { ChainModule } from './libs/chain/chain.module';
 import { RolesModule } from './roles/roles.module';
 import { MailingsModule } from './mailings/mailings.module';
 import { PaginationModule } from './libs/pagination/pagination.module';
-import { FilesModule } from './files/files.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BackupsModule } from './backups/backups.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -71,7 +70,6 @@ import { PaymentsModule } from './payments/payments.module';
     ChainModule,
     RolesModule,
     MailingsModule,
-    FilesModule,
     BackupsModule,
     CustomCacheModule,
     MenuModule,
