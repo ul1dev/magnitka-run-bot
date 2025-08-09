@@ -5,6 +5,8 @@
 
 config
 
+static
+
 *.env
 
 # Logs

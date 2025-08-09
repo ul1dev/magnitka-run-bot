@@ -55,13 +55,18 @@ export class OrdersService {
       process.env.PAYMENTS_WEBHOOK_URL ||
       'https://your.domain/api/payments/alfasbp/webhook';
 
-    const pay = await this.alfaSbp.createPaymentLink({
-      orderId: order.id,
-      amountMinor: totalMinor,
-      description: `Order ${order.id}`,
-      customerEmail: data.email,
-      webhookUrl,
-    });
+    // const pay = await this.alfaSbp.createPaymentLink({
+    //   orderId: order.id,
+    //   amountMinor: totalMinor,
+    //   description: `Order ${order.id}`,
+    //   customerEmail: data.email,
+    //   webhookUrl,
+    // });
+
+    const pay = {
+      paymentLink: 'https://payment.com/url',
+      paymentId: 'sdjhkfgjh23423',
+    };
 
     await order.update({
       paymentLink: pay.paymentLink,

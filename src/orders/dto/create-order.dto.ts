@@ -11,7 +11,7 @@ import { Transform, Type } from 'class-transformer';
 
 export class CreateOrderItemDto {
   @IsString()
-  id!: string; // ShopProduct.id
+  id!: string;
 
   @Transform(({ value }) =>
     typeof value === 'string' ? parseInt(value, 10) : value,
