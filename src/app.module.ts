@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TelegrafModule, TelegrafModuleOptions } from 'nestjs-telegraf';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { validationSchema } from './libs/common';
 import { DatabaseModule } from './general/database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -47,6 +49,10 @@ import { PaymentsModule } from './payments/payments.module';
     CacheModule.register({
       ttl: 70 * 1000,
       max: 1000,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'static'),
+      serveRoot: '/static',
     }),
     ScheduleModule.forRoot(),
     DatabaseModule,

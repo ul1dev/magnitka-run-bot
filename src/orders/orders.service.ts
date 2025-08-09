@@ -4,15 +4,7 @@ import { OrderProductRepository } from './repositories/order-product.repository'
 import { ShopProductRepository } from 'src/shop/repositories/shop-product.repository';
 import { AlfaSbpService } from 'src/payments/alfa-sbp.service';
 import { Order } from './models/order.model';
-
-type CreateOrderItem = { id: string; count: number; size?: string };
-type CreateOrderInput = {
-  name: string;
-  phone: string;
-  email: string;
-  deliveryMethod: string;
-  products: CreateOrderItem[];
-};
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -24,7 +16,7 @@ export class OrdersService {
   ) {}
 
   // Публичный сценарий: создать заказ → вернуть order + paymentLink
-  async create(data: CreateOrderInput) {
+  async create(data: CreateOrderDto) {
     // 1) Сумма заказа по актуальным ценам из БД
     const ids = [...new Set(data.products.map((p) => p.id))];
     const products = await this.productsRepo.findAll({ where: { id: ids } });
