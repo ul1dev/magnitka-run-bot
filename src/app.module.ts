@@ -28,6 +28,7 @@ import { TrainersModule } from './trainers/trainers.module';
 import { PacemakersModule } from './pacemakers/pacemakers.module';
 import { ShopModule } from './shop/shop.module';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   controllers: [AppController],
@@ -79,6 +80,7 @@ import { OrdersModule } from './orders/orders.module';
     PacemakersModule,
     ShopModule,
     OrdersModule,
+    PaymentsModule,
 
     // должно быть внизу из за приоритета выполнения
     ListenersLowModule,

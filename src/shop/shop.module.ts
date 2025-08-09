@@ -9,5 +9,6 @@ import { ShopProductsController } from './shop-products.controller';
   imports: [DatabaseModule.forFeature([ShopProduct])],
   providers: [ShopProductRepository, ShopProductsService],
   controllers: [ShopProductsController],
+  exports: [ShopProductRepository],
 })
 export class ShopModule {}

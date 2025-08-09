@@ -8,7 +8,10 @@ module.exports = {
       phone: { type: Sequelize.STRING, allowNull: false },
       email: { type: Sequelize.STRING, allowNull: false },
       deliveryMethod: { type: Sequelize.STRING, allowNull: false },
-      orderMessageId: { type: Sequelize.STRING, allowNull: true },
+      orderMessageId: { type: Sequelize.STRING },
+      paymentLink: { type: Sequelize.STRING },
+      providerPaymentId: { type: Sequelize.STRING },
+      provider: { type: Sequelize.STRING },
 
       status: {
         type: Sequelize.STRING,

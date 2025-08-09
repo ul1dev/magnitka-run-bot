@@ -11,6 +11,9 @@ export interface OrderCreationArgs {
   deliveryMethod: string;
   status?: OrderStatus;
   orderMessageId?: string;
+  paymentLink?: string;
+  providerPaymentId?: string;
+  provider?: 'ALFA_SBP';
 }
 
 @Table({ tableName: 'Orders' })
@@ -36,6 +39,15 @@ export class Order extends AbstractModel<Order, OrderCreationArgs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare orderMessageId: string;
+
+  @Column({ type: DataType.STRING })
+  declare paymentLink?: string;
+
+  @Column({ type: DataType.STRING })
+  declare providerPaymentId?: string;
+
+  @Column({ type: DataType.STRING })
+  declare provider?: 'ALFA_SBP';
 
   @HasMany(() => OrderProduct, { foreignKey: 'orderId', as: 'products' })
   declare products: OrderProduct[];
