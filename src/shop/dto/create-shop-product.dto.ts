@@ -1,10 +1,11 @@
 import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-function toInt(v: any) {
-  if (typeof v === 'number') return v;
-  if (typeof v === 'string') return parseInt(v, 10);
-  return v;
+function toOptionalInt(v: any) {
+  if (v === undefined || v === null) return undefined;
+  if (typeof v === 'string' && v.trim() === '') return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.trunc(n) : undefined;
 }
 function parseJSON<T>(v: any): T | undefined {
   if (v === undefined || v === null || v === '') return undefined;
@@ -21,7 +22,7 @@ type SizeItem = { isUnavailable: boolean; value: string };
 export class CreateShopProductDto {
   @IsString() article!: string;
 
-  @Transform(({ value }) => toInt(value))
+  @Transform(({ value }) => toOptionalInt(value))
   @IsInt()
   @Min(0)
   price!: number;
@@ -30,8 +31,9 @@ export class CreateShopProductDto {
   @IsString() info!: string;
 
   @IsOptional()
-  @Transform(({ value }) => toInt(value))
+  @Transform(({ value }) => toOptionalInt(value))
   @IsInt()
+  @Min(0)
   discountProcent?: number;
 
   @IsOptional() @IsString() description?: string;
