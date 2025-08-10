@@ -58,7 +58,10 @@ export class RacesService {
 
   private groupFiles(files: Express.Multer.File[]): FilesMap {
     const map: FilesMap = {};
-    for (const f of files || []) (map[f.fieldname] ||= []).push(f);
+    for (const f of files || []) {
+      const key = f.fieldname.replace(/\[\]$/, ''); // <-- сняли [] в конце
+      (map[key] ||= []).push(f);
+    }
     return map;
   }
 
