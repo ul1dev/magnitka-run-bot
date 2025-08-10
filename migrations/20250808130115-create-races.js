@@ -8,7 +8,7 @@ module.exports = {
       cardTitle: { type: Sequelize.STRING },
       cardDates: { type: Sequelize.STRING },
       title: { type: Sequelize.STRING, allowNull: false },
-      description: { type: Sequelize.TEXT, allowNull: false },
+      description: { type: Sequelize.TEXT },
 
       isRegBtn: { type: Sequelize.BOOLEAN, defaultValue: false },
       regBtnUrl: { type: Sequelize.STRING },
@@ -44,7 +44,7 @@ module.exports = {
       datesMonthText: { type: Sequelize.STRING },
 
       aboutImgs: { type: Sequelize.JSON },
-      dateAndPlaceText: { type: Sequelize.STRING, allowNull: false },
+      dateAndPlaceText: { type: Sequelize.TEXT },
       participantPackageText: { type: Sequelize.TEXT },
       participantPackageImgs: { type: Sequelize.JSON },
       routesImgs: { type: Sequelize.JSON },

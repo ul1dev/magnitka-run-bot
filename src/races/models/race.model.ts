@@ -2,10 +2,12 @@ import { Column, DataType, Table } from 'sequelize-typescript';
 import { AbstractModel } from 'src/libs/common';
 
 export interface RaceCreationArgs {
+  title: string;
+  date: string;
+
   cardTitle?: string;
   cardDates?: string;
-  title: string;
-  description: string;
+  description?: string;
   isRegBtn?: boolean;
   regBtnUrl?: string;
   regBtnTextColor?: string;
@@ -23,7 +25,6 @@ export interface RaceCreationArgs {
     | 'bottom-left'
     | 'bottom-right'
     | 'center';
-  date: string;
   mainBgImg?: string;
   mainBgColor?: string;
   mainTextColor?: string;
@@ -31,7 +32,7 @@ export interface RaceCreationArgs {
   datesNumsText?: string;
   datesMonthText?: string;
   aboutImgs?: string[];
-  dateAndPlaceText: string;
+  dateAndPlaceText?: string;
   participantPackageText?: string;
   participantPackageImgs?: string[];
   routesImgs?: string[];
@@ -41,13 +42,18 @@ export interface RaceCreationArgs {
 
 @Table({ tableName: 'Races' })
 export class Race extends AbstractModel<Race, RaceCreationArgs> {
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare title: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare date: string;
+
   @Column({ type: DataType.STRING, allowNull: true })
   declare cardTitle?: string;
   @Column({ type: DataType.STRING, allowNull: true })
   declare cardDates?: string;
 
-  @Column({ type: DataType.STRING, allowNull: false }) declare title: string;
-  @Column({ type: DataType.TEXT, allowNull: false })
+  @Column({ type: DataType.TEXT, allowNull: true })
   declare description: string;
 
   @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
@@ -91,8 +97,6 @@ export class Race extends AbstractModel<Race, RaceCreationArgs> {
     | 'bottom-right'
     | 'center';
 
-  @Column({ type: DataType.STRING, allowNull: false }) declare date: string;
-
   @Column({ type: DataType.STRING, allowNull: true })
   declare mainBgImg?: string;
   @Column({ type: DataType.STRING, allowNull: true })
@@ -108,7 +112,7 @@ export class Race extends AbstractModel<Race, RaceCreationArgs> {
 
   @Column({ type: DataType.JSON, allowNull: true })
   declare aboutImgs?: string[];
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: true })
   declare dateAndPlaceText: string;
   @Column({ type: DataType.TEXT, allowNull: true })
   declare participantPackageText?: string;
