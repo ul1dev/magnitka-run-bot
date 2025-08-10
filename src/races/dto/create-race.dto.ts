@@ -34,7 +34,7 @@ export class CreateRaceDto {
   @IsOptional() @IsString() cardDates?: string;
 
   @IsString() title!: string;
-  @IsString() description!: string;
+  @IsOptional() @IsString() description!: string;
 
   @IsOptional()
   @Transform(({ value }) => toBool(value))
@@ -75,7 +75,7 @@ export class CreateRaceDto {
   @IsOptional() @IsString() datesNumsText?: string;
   @IsOptional() @IsString() datesMonthText?: string;
 
-  @IsString() dateAndPlaceText!: string;
+  @IsOptional() @IsString() dateAndPlaceText!: string;
 
   @IsOptional() @IsString() participantPackageText?: string;
 
