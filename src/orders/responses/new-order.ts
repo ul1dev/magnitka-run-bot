@@ -3,7 +3,7 @@ import { Order } from '../models/order.model';
 export const newOrderMessage = (order: Order) => {
   let initMessage = `🛍 <b>Новый заказ</b>
 
-<b>Заказчик</b>
+<b>Получатель</b>
 ФИО: <code>${order.name}</code>
 Телефон: <code>${order.phone}</code>
 Почта: ${order.email}
