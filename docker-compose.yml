@@ -1,27 +1,27 @@
 version: '3'
 
 services:
-  # magnitkarunbot:
-  #   build: ./
+  magnitkarunbot:
+    build: ./
 
-  #   container_name: 'magnitkarunbot'
-  #   image: ulidev/diaversetestback
+    container_name: 'magnitkarunbot'
+    image: ulidev/magnitkarunbot
 
-  #   restart: always
+    restart: always
 
-  #   # links:
-  #   #   - database:database
+    # links:
+    #   - database:database
 
-  #   environment:
-  #     - MYSQL_HOST=193.111.117.78
-  #     - MYSQL_PORT=3306
-  #     - NODE_ENV=production
+    environment:
+      - MYSQL_HOST=localhost
+      - MYSQL_PORT=3306
+      - NODE_ENV=production
 
-  #   # depends_on:
-  #   #   - database
+    # depends_on:
+    #   - database
 
-  #   ports:
-  #     - '8080:8080'
+    ports:
+      - '8080:8080'
 
   # networks:
   #   - app-network
