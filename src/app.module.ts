@@ -19,6 +19,7 @@ import { PacemakersModule } from './pacemakers/pacemakers.module';
 import { ShopModule } from './shop/shop.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
+import { TrainingSignupsModule } from './trainings/training-signups.module';
 
 @Module({
   controllers: [AppController],
@@ -64,6 +65,7 @@ import { PaymentsModule } from './payments/payments.module';
     ShopModule,
     OrdersModule,
     PaymentsModule,
+    TrainingSignupsModule,
   ],
   providers: [
     {

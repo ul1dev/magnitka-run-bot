@@ -5,6 +5,10 @@ import { ShopProductRepository } from 'src/shop/repositories/shop-product.reposi
 import { AlfaSbpService } from 'src/payments/alfa-sbp.service';
 import { Order } from './models/order.model';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { InjectBot } from 'nestjs-telegraf';
+import { Context, Telegraf } from 'telegraf';
+import { sendMessage } from 'src/general';
+import { newOrderMarkup, newOrderMessage, paidOrderMarkup } from './responses';
 
 @Injectable()
 export class OrdersService {
@@ -13,6 +17,7 @@ export class OrdersService {
     private readonly orderProductsRepo: OrderProductRepository,
     private readonly productsRepo: ShopProductRepository,
     private readonly alfaSbp: AlfaSbpService,
+    @InjectBot() private readonly bot: Telegraf<Context>,
   ) {}
 
   // Публичный сценарий: создать заказ → вернуть order + paymentLink
@@ -64,7 +69,7 @@ export class OrdersService {
     // });
 
     const pay = {
-      paymentLink: 'https://payment.com/url',
+      paymentLink: 'https://google.com',
       paymentId: 'sdjhkfgjh23423',
     };
 
@@ -80,6 +85,21 @@ export class OrdersService {
       ],
     });
 
+    if (fullOrder) {
+      const message = await sendMessage(newOrderMessage(fullOrder), {
+        bot: this.bot,
+        chatId: process.env.ORDERS_CHAT_ID,
+        type: 'send',
+        reply_markup: newOrderMarkup(),
+      });
+
+      if (typeof message !== 'boolean' && message?.message_id) {
+        await order.update({
+          orderMessageId: String(message.message_id),
+        });
+      }
+    }
+
     return {
       order: fullOrder as Order,
       paymentLink: pay.paymentLink,
@@ -94,7 +114,20 @@ export class OrdersService {
     });
 
     if (!order) return;
+
     await order.update({ status: 'PAID' });
+
+    if (order.orderMessageId) {
+      try {
+        this.bot.telegram.editMessageReplyMarkup(
+          process.env.ORDERS_CHAT_ID,
+          Number(order.orderMessageId),
+          undefined,
+          paidOrderMarkup(),
+        );
+      } catch (e) {}
+    }
+
     return order;
   }
 }
