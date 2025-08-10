@@ -30,10 +30,14 @@ function parseJSON<T>(value: any): T | undefined {
 type PartnerMeta = { categoryText: string; link?: string };
 
 export class CreateRaceDto {
+  @IsString() title!: string;
+  @IsString() regBtnUrl: string;
+  @IsDateString()
+  date!: string;
+
   @IsOptional() @IsString() cardTitle?: string;
   @IsOptional() @IsString() cardDates?: string;
 
-  @IsString() title!: string;
   @IsOptional() @IsString() description!: string;
 
   @IsOptional()
@@ -41,7 +45,6 @@ export class CreateRaceDto {
   @IsBoolean()
   isRegBtn?: boolean;
 
-  @IsOptional() @IsString() regBtnUrl?: string;
   @IsOptional() @IsString() regBtnTextColor?: string;
   @IsOptional() @IsString() regBtnBgColor?: string;
   @IsOptional() @IsString() regBtnBorderColor?: string;
@@ -65,9 +68,6 @@ export class CreateRaceDto {
     | 'bottom-left'
     | 'bottom-right'
     | 'center';
-
-  @IsDateString()
-  date!: string;
 
   @IsOptional() @IsString() mainBgColor?: string;
   @IsOptional() @IsString() mainTextColor?: string;
