@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('TeamMembers', {
       id: {
-        type: Sequelize.STRING(64), // под nanoid/uuid
+        type: Sequelize.STRING(64),
         allowNull: false,
         primaryKey: true,
       },
@@ -15,7 +15,6 @@ module.exports = {
       },
       description: {
         type: Sequelize.TEXT,
-        allowNull: false,
       },
       img: {
         type: Sequelize.STRING(1024),

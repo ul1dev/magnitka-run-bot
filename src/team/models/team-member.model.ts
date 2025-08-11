@@ -3,7 +3,7 @@ import { AbstractModel } from 'src/libs/common';
 
 export interface TeamMemberCreationArgs {
   name: string;
-  description: string;
+  description?: string;
   img: string;
 }
 
@@ -15,7 +15,7 @@ export class TeamMember extends AbstractModel<
   @Column({ type: DataType.STRING, allowNull: false })
   declare name: string;
 
-  @Column({ type: DataType.TEXT, allowNull: false })
+  @Column({ type: DataType.TEXT, allowNull: true })
   declare description: string;
 
   @Column({ type: DataType.STRING, allowNull: false })

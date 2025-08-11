@@ -4,8 +4,9 @@ export class CreateTeamMemberDto {
   @IsString()
   name!: string;
 
+  @IsOptional()
   @IsString()
-  description!: string;
+  description?: string;
 
   @IsOptional()
   @IsString()
