@@ -21,6 +21,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { TrainingSignupsModule } from './trainings/training-signups.module';
 import { TeamMembersModule } from './team/team.module';
+import { MainOptionsModule } from './main-options/main-options.module';
 
 @Module({
   controllers: [AppController],
@@ -68,6 +69,7 @@ import { TeamMembersModule } from './team/team.module';
     PaymentsModule,
     TrainingSignupsModule,
     TeamMembersModule,
+    MainOptionsModule,
   ],
   providers: [
     {

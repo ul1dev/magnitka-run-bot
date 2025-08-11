@@ -7,6 +7,7 @@ import { ShopProduct } from 'src/shop/models/shop-product.model';
 import { Order } from 'src/orders/models/order.model';
 import { OrderProduct } from 'src/orders/models/order-product.model';
 import { TeamMember } from 'src/team/models/team-member.model';
+import { MainOptions } from 'src/main-options/models/main-options.model';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TeamMember } from 'src/team/models/team-member.model';
       Order,
       OrderProduct,
       TeamMember,
+      MainOptions,
     ]),
   ],
 })
