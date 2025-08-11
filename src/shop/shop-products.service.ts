@@ -12,12 +12,15 @@ export class ShopProductsService {
   constructor(private readonly repo: ShopProductRepository) {}
 
   findAll() {
-    return this.repo.findAll({ order: [['createdAt', 'DESC']] });
+    return this.repo.findAll({
+      where: { isDeleted: false },
+      order: [['createdAt', 'DESC']],
+    });
   }
 
   async findById(id: string) {
     const doc = await this.repo.findByPk(id);
-    if (!doc) throw new NotFoundException('Product not found');
+    if (!doc || doc.isDeleted) throw new NotFoundException('Product not found');
     return doc;
   }
 
@@ -52,8 +55,7 @@ export class ShopProductsService {
 
   async remove(id: string) {
     const entity = await this.findById(id);
-    await this.deleteFiles(entity.imgs);
-    await entity.destroy();
+    await entity.update({ isDeleted: true });
     return { ok: true };
   }
 

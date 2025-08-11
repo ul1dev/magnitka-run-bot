@@ -1,4 +1,4 @@
-import { Column, DataType, Table } from 'sequelize-typescript';
+import { Column, DataType, Default, Table } from 'sequelize-typescript';
 import { AbstractModel } from 'src/libs/common';
 
 export interface ShopProductCreationArgs {
@@ -33,4 +33,8 @@ export class ShopProduct extends AbstractModel<
     isUnavailable: boolean;
     value: string;
   }[];
+
+  @Default(false)
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  declare isDeleted: boolean;
 }

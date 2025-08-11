@@ -6,6 +6,7 @@ import { Pacemaker } from 'src/pacemakers/models/pacemaker.model';
 import { ShopProduct } from 'src/shop/models/shop-product.model';
 import { Order } from 'src/orders/models/order.model';
 import { OrderProduct } from 'src/orders/models/order-product.model';
+import { TeamMember } from 'src/team/models/team-member.model';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { OrderProduct } from 'src/orders/models/order-product.model';
       ShopProduct,
       Order,
       OrderProduct,
+      TeamMember,
     ]),
   ],
 })

@@ -20,6 +20,7 @@ import { ShopModule } from './shop/shop.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { TrainingSignupsModule } from './trainings/training-signups.module';
+import { TeamMembersModule } from './team/team.module';
 
 @Module({
   controllers: [AppController],
@@ -66,6 +67,7 @@ import { TrainingSignupsModule } from './trainings/training-signups.module';
     OrdersModule,
     PaymentsModule,
     TrainingSignupsModule,
+    TeamMembersModule,
   ],
   providers: [
     {
