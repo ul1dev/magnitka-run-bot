@@ -49,6 +49,11 @@ export class RacesService {
         entity.partners.map((p: any) => p?.img).filter(Boolean),
       );
     }
+    if (Array.isArray(entity.pressBlocks)) {
+      await this.deleteFieldFiles(
+        entity.pressBlocks.map((p: any) => p?.img).filter(Boolean),
+      );
+    }
 
     await entity.destroy();
     return { ok: true };
@@ -109,6 +114,31 @@ export class RacesService {
       });
       (draft as any).partners = result;
     }
+
+    // ----- pressBlocks (создание) -----
+    const incomingPress: any[] = Array.isArray((draft as any).pressBlocks)
+      ? (draft as any).pressBlocks
+      : [];
+    if (incomingPress.length) {
+      const savedPressByIndex = new Map<number, string>();
+      await Promise.all(
+        Object.keys(files)
+          .filter((k) => /^pressBlockImg_\d+$/.test(k))
+          .map(async (k) => {
+            const i = Number(k.split('_')[1]);
+            const f = files[k]?.[0];
+            if (f) savedPressByIndex.set(i, await this.saveOne(f));
+          }),
+      );
+
+      const result = incomingPress.map((p, i) => {
+        const img = savedPressByIndex.get(i) ?? p.img;
+        const out = { url: p.url } as any;
+        if (img) out.img = img;
+        return out;
+      });
+      (draft as any).pressBlocks = result;
+    }
   }
 
   private async applyUploadedImagesUpdate(
@@ -143,80 +173,154 @@ export class RacesService {
     }
 
     // ---------- Партнёры (точечные изменения) ----------
-    // Если не пришла meta partners — ничего с партнёрами не делаем
     const incoming = Array.isArray((draft as any).partners)
       ? ((draft as any).partners as any[])
       : null;
-    if (!incoming) return;
 
-    const oldPartners: any[] = Array.isArray(existed.partners)
-      ? existed.partners
+    if (incoming) {
+      const oldPartners: any[] = Array.isArray(existed.partners)
+        ? existed.partners
+        : [];
+
+      // 1) Сохранить новые картинки по полям partnerImg_<index>
+      const savedByIndex = new Map<number, string>();
+      await Promise.all(
+        Object.keys(files)
+          .filter((k) => /^partnerImg_\d+$/.test(k))
+          .map(async (k) => {
+            const i = Number(k.split('_')[1]);
+            const f = files[k]?.[0];
+            if (f) savedByIndex.set(i, await this.saveOne(f));
+          }),
+      );
+
+      // 2) Узнать какие старые индексы остались, чтобы понять кого удалили
+      const keptOldIdx = new Set<number>();
+      for (const row of incoming) {
+        const oi = Number.isInteger(row?.origIndex)
+          ? Number(row.origIndex)
+          : null;
+        if (oi !== null && oi >= 0) keptOldIdx.add(oi);
+      }
+
+      // 3) Удалить изображения только у тех, кто реально удалён (их origIndex нет в новом списке)
+      for (let oi = 0; oi < oldPartners.length; oi++) {
+        if (!keptOldIdx.has(oi)) {
+          const oldImg = oldPartners[oi]?.img;
+          await this.deleteFieldFiles(oldImg);
+        }
+      }
+
+      // 4) Собрать конечный массив партнёров
+      const newPartners = await Promise.all(
+        incoming.map(async (p, i) => {
+          const oi = Number.isInteger(p?.origIndex)
+            ? Number(p.origIndex)
+            : null;
+
+          // если пришёл новый файл для этого i — заменяем картинку
+          if (savedByIndex.has(i)) {
+            const newImg = savedByIndex.get(i)!;
+            // Если у старого была картинка и мы её заменяем — удалить старую
+            if (oi !== null && oldPartners[oi]?.img) {
+              await this.deleteFieldFiles(oldPartners[oi].img);
+            }
+            return { categoryText: p.categoryText, link: p.link, img: newImg };
+          }
+
+          // иначе, если клиент прислал img в meta — оставляем её как есть
+          if (p?.img) {
+            return { categoryText: p.categoryText, link: p.link, img: p.img };
+          }
+
+          // иначе, если это существующая запись (origIndex есть) — перенесём старую картинку
+          if (oi !== null && oldPartners[oi]?.img) {
+            return {
+              categoryText: p.categoryText,
+              link: p.link,
+              img: oldPartners[oi].img,
+            };
+          }
+
+          // новый партнёр без картинки
+          return { categoryText: p.categoryText, link: p.link };
+        }),
+      );
+
+      (draft as any).partners = newPartners;
+    }
+
+    // ---------- PressBlocks (точечные изменения) ----------
+    const incomingPress = Array.isArray((draft as any).pressBlocks)
+      ? ((draft as any).pressBlocks as any[])
+      : null;
+    if (!incomingPress) return;
+
+    const oldPressBlocks: any[] = Array.isArray(existed.pressBlocks)
+      ? existed.pressBlocks
       : [];
 
-    // 1) Сохранить новые картинки по полям partnerImg_<index>
-    const savedByIndex = new Map<number, string>();
+    // 1) Сохранить новые картинки по полям pressBlockImg_<index>
+    const savedPressByIndex = new Map<number, string>();
     await Promise.all(
       Object.keys(files)
-        .filter((k) => /^partnerImg_\d+$/.test(k))
+        .filter((k) => /^pressBlockImg_\d+$/.test(k))
         .map(async (k) => {
           const i = Number(k.split('_')[1]);
           const f = files[k]?.[0];
-          if (f) savedByIndex.set(i, await this.saveOne(f));
+          if (f) savedPressByIndex.set(i, await this.saveOne(f));
         }),
     );
 
-    // 2) Узнать какие старые индексы остались, чтобы понять кого удалили
-    const keptOldIdx = new Set<number>();
-    for (const row of incoming) {
+    // 2) Узнать какие старые индексы остались
+    const keptOldPressIdx = new Set<number>();
+    for (const row of incomingPress) {
       const oi = Number.isInteger(row?.origIndex)
         ? Number(row.origIndex)
         : null;
-      if (oi !== null && oi >= 0) keptOldIdx.add(oi);
+      if (oi !== null && oi >= 0) keptOldPressIdx.add(oi);
     }
 
-    // 3) Удалить изображения только у тех, кто реально удалён (их origIndex нет в новом списке)
-    for (let oi = 0; oi < oldPartners.length; oi++) {
-      if (!keptOldIdx.has(oi)) {
-        const oldImg = oldPartners[oi]?.img;
+    // 3) Удалить изображения только у тех, кто реально удалён
+    for (let oi = 0; oi < oldPressBlocks.length; oi++) {
+      if (!keptOldPressIdx.has(oi)) {
+        const oldImg = oldPressBlocks[oi]?.img;
         await this.deleteFieldFiles(oldImg);
       }
     }
 
-    // 4) Собрать конечный массив партнёров
-    const newPartners = await Promise.all(
-      incoming.map(async (p, i) => {
-        const oi = Number.isInteger(p?.origIndex) ? Number(p.origIndex) : null;
+    // 4) Собрать конечный массив pressBlocks
+    const newPressBlocks = await Promise.all(
+      incomingPress.map(async (p, i) => {
+        const oi = Number.isInteger(p?.origIndex)
+          ? Number(p.origIndex)
+          : null;
 
         // если пришёл новый файл для этого i — заменяем картинку
-        if (savedByIndex.has(i)) {
-          const newImg = savedByIndex.get(i)!;
-          // Если у старого была картинка и мы её заменяем — удалить старую
-          if (oi !== null && oldPartners[oi]?.img) {
-            await this.deleteFieldFiles(oldPartners[oi].img);
+        if (savedPressByIndex.has(i)) {
+          const newImg = savedPressByIndex.get(i)!;
+          if (oi !== null && oldPressBlocks[oi]?.img) {
+            await this.deleteFieldFiles(oldPressBlocks[oi].img);
           }
-          return { categoryText: p.categoryText, link: p.link, img: newImg };
+          return { url: p.url, img: newImg };
         }
 
-        // иначе, если клиент прислал img в meta — оставляем её как есть
+        // если клиент прислал img в meta — оставляем как есть
         if (p?.img) {
-          return { categoryText: p.categoryText, link: p.link, img: p.img };
+          return { url: p.url, img: p.img };
         }
 
-        // иначе, если это существующая запись (origIndex есть) — перенесём старую картинку
-        if (oi !== null && oldPartners[oi]?.img) {
-          return {
-            categoryText: p.categoryText,
-            link: p.link,
-            img: oldPartners[oi].img,
-          };
+        // если это существующая запись — перенесём старую картинку
+        if (oi !== null && oldPressBlocks[oi]?.img) {
+          return { url: p.url, img: oldPressBlocks[oi].img };
         }
 
-        // новый партнёр без картинки
-        return { categoryText: p.categoryText, link: p.link };
+        // новый блок без картинки
+        return { url: p.url };
       }),
     );
 
-    (draft as any).partners = newPartners;
+    (draft as any).pressBlocks = newPressBlocks;
   }
 
   private async saveOne(file: Express.Multer.File): Promise<string> {

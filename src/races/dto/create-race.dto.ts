@@ -28,6 +28,7 @@ function parseJSON<T>(value: any): T | undefined {
 }
 
 type PartnerMeta = { categoryText: string; link?: string };
+type PressBlockMeta = { url: string };
 
 export class CreateRaceDto {
   @IsString() title!: string;
@@ -81,9 +82,15 @@ export class CreateRaceDto {
 
   @IsOptional() @IsString() routesText?: string;
 
-  // Партнёры передаются JSON без картинок; файлы идут как partnersImgs[]
+  // Партнёры передаются JSON без картинок; файлы идут как partnerImg_<i>
   @IsOptional()
   @IsArray()
   @Transform(({ value }) => parseJSON<PartnerMeta[]>(value))
   partners?: PartnerMeta[];
+
+  // Пресс-блоки передаются JSON с url; файлы идут как pressBlockImg_<i>
+  @IsOptional()
+  @IsArray()
+  @Transform(({ value }) => parseJSON<PressBlockMeta[]>(value))
+  pressBlocks?: PressBlockMeta[];
 }

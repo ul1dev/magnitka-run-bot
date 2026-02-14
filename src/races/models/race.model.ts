@@ -38,6 +38,7 @@ export interface RaceCreationArgs {
   routesImgs?: string[];
   routesText?: string;
   partners?: { img: string; categoryText: string; link?: string }[];
+  pressBlocks?: { img: string; url: string }[];
 }
 
 @Table({ tableName: 'Races' })
@@ -124,4 +125,7 @@ export class Race extends AbstractModel<Race, RaceCreationArgs> {
 
   @Column({ type: DataType.JSON, allowNull: true })
   declare partners?: { img: string; categoryText: string; link?: string }[];
+
+  @Column({ type: DataType.JSON, allowNull: true })
+  declare pressBlocks?: { img: string; url: string }[];
 }
