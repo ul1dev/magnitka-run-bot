@@ -22,6 +22,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { TrainingSignupsModule } from './trainings/training-signups.module';
 import { TeamMembersModule } from './team/team.module';
 import { MainOptionsModule } from './main-options/main-options.module';
+import { MainPageModule } from './main-page/main-page.module';
 
 @Module({
   controllers: [AppController],
@@ -70,6 +71,7 @@ import { MainOptionsModule } from './main-options/main-options.module';
     TrainingSignupsModule,
     TeamMembersModule,
     MainOptionsModule,
+    MainPageModule,
   ],
   providers: [
     {

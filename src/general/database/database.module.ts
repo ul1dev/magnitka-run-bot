@@ -8,6 +8,7 @@ import { Order } from 'src/orders/models/order.model';
 import { OrderProduct } from 'src/orders/models/order-product.model';
 import { TeamMember } from 'src/team/models/team-member.model';
 import { MainOptions } from 'src/main-options/models/main-options.model';
+import { MainPage } from 'src/main-page/models/main-page.model';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MainOptions } from 'src/main-options/models/main-options.model';
       OrderProduct,
       TeamMember,
       MainOptions,
+      MainPage,
     ]),
   ],
 })
