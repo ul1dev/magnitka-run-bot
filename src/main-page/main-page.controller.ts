@@ -14,6 +14,7 @@ import { FileInterceptor, AnyFilesInterceptor } from '@nestjs/platform-express';
 import { MainPageService } from './main-page.service';
 import { AdminSecretGuard } from 'src/general/guards/admin-secret.guard';
 import { DeleteGalleryImagesDto } from './dto/delete-gallery-images.dto';
+import { UpdateMainTimerDateDto } from './dto/update-main-timer-date.dto';
 
 @Controller('main-page')
 export class MainPageController {
@@ -23,6 +24,13 @@ export class MainPageController {
   @Get()
   get() {
     return this.mainPageService.get();
+  }
+
+  /** PUT /main-page/main-timer-date — изменить mainTimerDate */
+  @Put('main-timer-date')
+  @UseGuards(AdminSecretGuard)
+  updateMainTimerDate(@Body() dto: UpdateMainTimerDateDto) {
+    return this.mainPageService.updateMainTimerDate(dto.mainTimerDate);
   }
 
   /** PUT /main-page/main-bg — заменить mainBgImg (или добавить если нет) */

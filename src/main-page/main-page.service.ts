@@ -27,6 +27,7 @@ export class MainPageService {
         mainBgImg: null,
         galleryFirstLineImgs: null,
         gallerySecondLineImgs: null,
+        mainTimerDate: `${new Date().getFullYear()}-09-07`,
       });
     }
     return entity;
@@ -41,8 +42,17 @@ export class MainPageService {
         mainBgImg: null,
         galleryFirstLineImgs: null,
         gallerySecondLineImgs: null,
+        mainTimerDate: `${new Date().getFullYear()}-09-07`,
       };
     }
+    return entity;
+  }
+
+  // ─────────── PUT /main-page/main-timer-date ───────────
+
+  async updateMainTimerDate(mainTimerDate: string) {
+    const entity = await this.getOrCreate();
+    await entity.update({ mainTimerDate });
     return entity;
   }
 
