@@ -14,8 +14,6 @@ RUN npm run build
 # ── production image ──────────────────────────────────────
 FROM node:22-alpine
 
-RUN apk add --no-cache postgresql-client curl
-
 WORKDIR /app
 
 COPY package*.json ./
@@ -24,6 +22,7 @@ RUN npm ci --omit=dev --fetch-retries=5 --fetch-retry-mintimeout=10000 --fetch-r
 
 COPY --from=builder /app/dist ./dist
 
+RUN mkdir -p /app/logs
 RUN chown -R node:node /app
 
 USER node
