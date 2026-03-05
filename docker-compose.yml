@@ -10,6 +10,7 @@ services:
     cap_drop:
       - ALL
     read_only: true
+    init: true
     tmpfs:
       - /tmp
       - /app/logs
@@ -42,6 +43,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
 
     networks:
       - magnitkarunbot_network
@@ -79,8 +86,15 @@ services:
       timeout: 5s
       retries: 10
 
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
 networks:
   magnitkarunbot_network:
+    name: magnitkarunbot_network
     driver: bridge
 
 volumes:
