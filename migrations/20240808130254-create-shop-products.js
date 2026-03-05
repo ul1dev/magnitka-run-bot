@@ -15,7 +15,7 @@ module.exports = {
       sizesTitle: { type: Sequelize.STRING },
       sizes: { type: Sequelize.JSON },
 
-      isDeleted: { type: Sequelize.TINYINT, allowNull: false, defaultValue: 0 },
+      isDeleted: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
 
       createdAt: {
         type: Sequelize.DATE,

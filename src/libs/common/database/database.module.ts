@@ -7,12 +7,12 @@ export class DatabaseModule {
   static forRoot(models: any[]) {
     return SequelizeModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
-        dialect: 'mysql',
-        host: configService.get('MYSQL_HOST'),
-        port: Number(configService.get('MYSQL_PORT')),
-        username: configService.get('MYSQL_USERNAME'),
-        password: configService.get('MYSQL_PASSWORD'),
-        database: configService.get('MYSQL_DBNAME'),
+        dialect: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: Number(configService.get('DB_PORT')),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DBNAME'),
         pool: {
           max: 50,
           min: 0,

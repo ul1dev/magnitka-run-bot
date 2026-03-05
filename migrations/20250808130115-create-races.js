@@ -52,6 +52,8 @@ module.exports = {
 
       partners: { type: Sequelize.JSON },
 
+      pressBlocks: { type: Sequelize.JSON },
+
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

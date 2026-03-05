@@ -53,7 +53,7 @@ export class AlfaSbpService {
       throw new Error('Failed to create SBP payment link');
     }
 
-    const data = (await res.json()) as any;
+    const data = await res.json();
     return {
       paymentId: String(data?.order_id ?? data?.id ?? args.orderId),
       paymentLink: String(data?.payment_link ?? data?.qrLink ?? data?.deeplink),

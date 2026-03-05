@@ -10,9 +10,7 @@ export class MainPageRepository extends AbstractRepository<
 > {
   protected readonly logger = new Logger(MainPage.name);
 
-  constructor(
-    @InjectModel(MainPage) private mainPageModel: typeof MainPage,
-  ) {
+  constructor(@InjectModel(MainPage) private mainPageModel: typeof MainPage) {
     super(mainPageModel);
   }
 }

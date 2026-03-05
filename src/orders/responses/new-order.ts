@@ -12,8 +12,9 @@ export const newOrderMessage = (order: Order) => {
 
 <b>Товары</b>`;
 
-  if (order?.products?.length) {
-    for (let { product, count, size } of order?.products) {
+  const products = order.products;
+  if (Array.isArray(products) && products.length) {
+    for (const { product, count, size } of products) {
       initMessage += `\n\nАртикул: <code>${product.article}</code>
 Название: <code>${product.title}</code>
 Кол-во: <code>${count}</code>${

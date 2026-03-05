@@ -11,7 +11,7 @@ export const formatKeyboard = (
   let prepeadedItems: InlineKeyboardButton[] = [];
   let index = 0;
 
-  for (let item of arr) {
+  for (const item of arr) {
     prepeadedItems.push(item);
 
     if (prepeadedItems.length >= rowLen || index === arr.length - 1) {

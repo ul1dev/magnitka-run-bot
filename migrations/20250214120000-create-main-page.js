@@ -24,6 +24,11 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
+      mainTimerDate: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '2025-09-07',
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

@@ -26,6 +26,10 @@ export class MainPage extends AbstractModel<MainPage, MainPageCreationArgs> {
   @Column({ type: DataType.JSON, allowNull: true, defaultValue: null })
   declare gallerySecondLineImgs: GalleryImage[] | null;
 
-  @Column({ type: DataType.STRING, allowNull: false, defaultValue: '2025-09-07' })
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    defaultValue: '2025-09-07',
+  })
   declare mainTimerDate: string;
 }

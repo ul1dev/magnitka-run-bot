@@ -1,57 +1,80 @@
-version: '3'
-
 services:
-  # magnitkarunbot:
-  #   build: ./
+  magnitkarunbot:
+    build: ./
 
-  #   container_name: 'magnitkarunbot'
-  #   image: ulidev/magnitkarunbot
+    container_name: 'magnitkarunbot'
+    image: ulidev/magnitkarunbot
+    user: '1000:1000'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
 
-  #   restart: always
-
-  #   # links:
-  #   #   - database:database
-
-  #   environment:
-  #     - MYSQL_HOST=localhost
-  #     - MYSQL_PORT=3306
-  #     - NODE_ENV=production
-
-  #   # depends_on:
-  #   #   - database
-
-  #   ports:
-  #     - '8080:8080'
-
-  # # networks:
-  # #   - app-network
-
-  database:
-    container_name: 'database'
-    image: mysql:8.0
     restart: always
+
+    env_file:
+      - .${NODE_ENV:-production}.env
     environment:
-      MYSQL_DATABASE: 'MainDatabase'
-      MYSQL_USER: 'MainUser'
-      MYSQL_PASSWORD: 'dkfjsdofnsofnmno5j84584nknvkIDJFIDOFJODS&&&***&(hjhdfkldf'
-      MYSQL_ROOT_PASSWORD: 'root'
-      LANG: C.UTF-8
+      - NODE_ENV=${NODE_ENV:-production}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
     ports:
-      - '3306:3306'
-    expose:
-      - '3306'
+      - '127.0.0.1:8080:8080'
+
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    networks:
+      - magnitkarunbot_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: magnitkarunbot-postgres
+    restart: always
+    user: '70:70'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    env_file:
+      - .${NODE_ENV:-production}.env
+    environment:
+      POSTGRES_USER: ${DB_USER:-MainUser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-MainPassword}
+      POSTGRES_DB: ${DB_DBNAME:-MagnitkaRunDatabase}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - database:/var/lib/mysql
-    command:
-      [
-        'mysqld',
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci',
-      ]
-  # networks:
-  #   - app-network
+      - magnitkarunbot_pg_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - magnitkarunbot_network
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USER:-MainUser} -d ${DB_DBNAME:-MagnitkaRunDatabase}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  magnitkarunbot_network:
+    driver: bridge
 
 volumes:
-  database:
-# networks:
-#   app-network:
+  magnitkarunbot_pg_data:

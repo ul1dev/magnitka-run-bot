@@ -292,9 +292,7 @@ export class RacesService {
     // 4) Собрать конечный массив pressBlocks
     const newPressBlocks = await Promise.all(
       incomingPress.map(async (p, i) => {
-        const oi = Number.isInteger(p?.origIndex)
-          ? Number(p.origIndex)
-          : null;
+        const oi = Number.isInteger(p?.origIndex) ? Number(p.origIndex) : null;
 
         // если пришёл новый файл для этого i — заменяем картинку
         if (savedPressByIndex.has(i)) {
