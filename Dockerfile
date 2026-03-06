@@ -16,6 +16,8 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache postgresql16-client
+
 COPY package*.json ./
 
 RUN npm ci --omit=dev --fetch-retries=5 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=60000
