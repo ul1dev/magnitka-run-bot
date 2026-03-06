@@ -12,6 +12,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { TeamMembersService } from './team.service';
 import { CreateTeamMemberDto } from './dto/create-team-member.dto';
 import { UpdateTeamMemberDto } from './dto/update-team-member.dto';
@@ -44,7 +45,9 @@ export class TeamMembersController {
   // защищённые
   @Post()
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor({ fileFilter: imageOnlyFileFilter }))
+  @UseInterceptors(
+    AnyFilesInterceptor({ fileFilter: imageOnlyFileFilter, storage: memoryStorage() }),
+  )
   create(
     @Body() body: CreateTeamMemberDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -54,7 +57,9 @@ export class TeamMembersController {
 
   @Patch(':id')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor({ fileFilter: imageOnlyFileFilter }))
+  @UseInterceptors(
+    AnyFilesInterceptor({ fileFilter: imageOnlyFileFilter, storage: memoryStorage() }),
+  )
   update(
     @Param('id') id: string,
     @Body() body: UpdateTeamMemberDto,

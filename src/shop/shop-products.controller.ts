@@ -12,6 +12,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { ShopProductsService } from './shop-products.service';
 import { CreateShopProductDto } from './dto/create-shop-product.dto';
 import { UpdateShopProductDto } from './dto/update-shop-product.dto';
@@ -33,7 +34,7 @@ export class ShopProductsController {
 
   @Post()
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   create(
     @Body() body: CreateShopProductDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -53,7 +54,7 @@ export class ShopProductsController {
 
   @Patch(':id')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   update(
     @Param('id') id: string,
     @Body() body: UpdateShopProductDto,

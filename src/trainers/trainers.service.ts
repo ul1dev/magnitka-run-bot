@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TrainerRepository } from './repositories/trainer.repository';
 import { Trainer } from './models/trainer.model';
-import * as fs from 'fs';
-import * as path from 'path';
-import { randomUUID } from 'crypto';
+import { S3StorageService } from 'src/libs/common';
 
 type FilesMap = Record<string, Express.Multer.File[]>;
 
 @Injectable()
 export class TrainersService {
-  constructor(private readonly trainerRepository: TrainerRepository) {}
+  constructor(
+    private readonly trainerRepository: TrainerRepository,
+    private readonly storage: S3StorageService,
+  ) {}
 
   // READ
   findAll() {
@@ -61,26 +62,10 @@ export class TrainersService {
   }
 
   private async saveOne(file: Express.Multer.File): Promise<string> {
-    const ext = path.extname(file.originalname || '').toLowerCase() || '.bin';
-    const filename = `${randomUUID()}${ext}`;
-    const dir = path.resolve(process.cwd(), 'static');
-    await fs.promises.mkdir(dir, { recursive: true });
-
-    const full = path.join(dir, filename);
-    const data =
-      file.buffer ??
-      (file.path ? await fs.promises.readFile(file.path) : undefined);
-    if (!data) throw new Error('Uploaded file has no data buffer');
-
-    await fs.promises.writeFile(full, data);
-    return `/static/${filename}`;
+    return this.storage.uploadStatic(file, 'static');
   }
 
   private async deleteFile(publicPath?: string) {
-    if (!publicPath) return;
-    const m = publicPath.match(/^\/?static\/(.+)$/i);
-    if (!m) return;
-    const abs = path.join(process.cwd(), 'static', m[1]);
-    await fs.promises.unlink(abs).catch(() => {});
+    await this.storage.deleteByPublicPath(publicPath);
   }
 }

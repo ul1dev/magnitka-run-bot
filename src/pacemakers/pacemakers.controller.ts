@@ -11,6 +11,7 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { PacemakersService } from './pacemakers.service';
 import { CreatePacemakerDto } from './dto/create-pacemaker.dto';
 import { UpdatePacemakerDto } from './dto/update-pacemaker.dto';
@@ -34,7 +35,7 @@ export class PacemakersController {
   // ADMIN (multipart/form-data)
   @Post()
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   create(
     @Body() body: CreatePacemakerDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -44,7 +45,7 @@ export class PacemakersController {
 
   @Patch(':id')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   update(
     @Param('id') id: string,
     @Body() body: UpdatePacemakerDto,

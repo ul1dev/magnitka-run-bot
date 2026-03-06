@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopProductRepository } from './repositories/shop-product.repository';
 import { ShopProduct } from './models/shop-product.model';
-import * as fs from 'fs';
-import * as path from 'path';
-import { randomUUID } from 'crypto';
+import { S3StorageService } from 'src/libs/common';
 
 type FilesMap = Record<string, Express.Multer.File[]>;
 
 @Injectable()
 export class ShopProductsService {
-  constructor(private readonly repo: ShopProductRepository) {}
+  constructor(
+    private readonly repo: ShopProductRepository,
+    private readonly storage: S3StorageService,
+  ) {}
 
   findAll() {
     return this.repo.findAll({
@@ -75,32 +76,11 @@ export class ShopProductsService {
   }
 
   private async saveOne(file: Express.Multer.File): Promise<string> {
-    const ext = path.extname(file.originalname || '').toLowerCase() || '.bin';
-    const filename = `${randomUUID()}${ext}`;
-    const dir = path.resolve(process.cwd(), 'static');
-    await fs.promises.mkdir(dir, { recursive: true });
-
-    const full = path.join(dir, filename);
-    const data =
-      file.buffer ??
-      (file.path ? await fs.promises.readFile(file.path) : undefined);
-    if (!data) throw new Error('Uploaded file has no data buffer');
-
-    await fs.promises.writeFile(full, data);
-    return `/static/${filename}`;
+    return this.storage.uploadStatic(file, 'static');
   }
 
   private async deleteFiles(values?: string[] | null) {
     const list = Array.isArray(values) ? values : [];
-    await Promise.all(
-      list.map(async (p) => {
-        try {
-          const m = p?.match(/^\/?static\/(.+)$/i);
-          if (!m) return;
-          const abs = path.join(process.cwd(), 'static', m[1]);
-          await fs.promises.unlink(abs).catch(() => {});
-        } catch {}
-      }),
-    );
+    await Promise.all(list.map((p) => this.storage.deleteByPublicPath(p)));
   }
 }

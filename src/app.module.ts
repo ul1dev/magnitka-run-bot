@@ -3,7 +3,7 @@ import { TelegrafModule, TelegrafModuleOptions } from 'nestjs-telegraf';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { validationSchema } from './libs/common';
+import { StorageModule, validationSchema } from './libs/common';
 import { DatabaseModule } from './general/database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BackupsModule } from './backups/backups.module';
@@ -59,6 +59,7 @@ import { MainPageModule } from './main-page/main-page.module';
       serveRoot: '/static',
     }),
     ScheduleModule.forRoot(),
+    StorageModule,
     DatabaseModule,
     BackupsModule,
     CustomCacheModule,

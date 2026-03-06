@@ -11,6 +11,7 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { TrainersService } from './trainers.service';
 import { CreateTrainerDto } from './dto/create-trainer.dto';
 import { UpdateTrainerDto } from './dto/update-trainer.dto';
@@ -33,7 +34,7 @@ export class TrainersController {
 
   @Post()
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   create(
     @Body() body: CreateTrainerDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -43,7 +44,7 @@ export class TrainersController {
 
   @Patch(':id')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   update(
     @Param('id') id: string,
     @Body() body: UpdateTrainerDto,

@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RaceRepository } from './repositories/race.repository';
 import { Race } from './models/race.model';
-import * as fs from 'fs';
-import * as path from 'path';
-import { randomUUID } from 'crypto';
+import { S3StorageService } from 'src/libs/common';
 
 type FilesMap = Record<string, Express.Multer.File[]>;
 
 @Injectable()
 export class RacesService {
-  constructor(private readonly raceRepository: RaceRepository) {}
+  constructor(
+    private readonly raceRepository: RaceRepository,
+    private readonly storage: S3StorageService,
+  ) {}
 
   findAll() {
     return this.raceRepository.findAll({ order: [['createdAt', 'ASC']] });
@@ -322,19 +323,7 @@ export class RacesService {
   }
 
   private async saveOne(file: Express.Multer.File): Promise<string> {
-    const ext = path.extname(file.originalname || '').toLowerCase() || '.bin';
-    const filename = `${randomUUID()}${ext}`;
-    const staticDir = path.resolve(process.cwd(), 'static');
-    await fs.promises.mkdir(staticDir, { recursive: true });
-
-    const fullPath = path.join(staticDir, filename);
-    const data =
-      file.buffer ??
-      (file.path ? await fs.promises.readFile(file.path) : undefined);
-    if (!data) throw new Error('Uploaded file has no data buffer');
-
-    await fs.promises.writeFile(fullPath, data);
-    return `/static/${filename}`;
+    return this.storage.uploadStatic(file, 'static');
   }
 
   private async saveMany(files: Express.Multer.File[]): Promise<string[]> {
@@ -345,33 +334,6 @@ export class RacesService {
 
   private async deleteFieldFiles(value?: string | string[]) {
     const list = Array.isArray(value) ? value : value ? [value] : [];
-    await Promise.all(
-      list.map(async (p) => {
-        try {
-          const abs = this.publicToAbsolute(p);
-          if (!abs) return;
-          await fs.promises.unlink(abs).catch(() => {});
-        } catch {}
-      }),
-    );
-  }
-
-  private publicToAbsolute(publicPath?: string) {
-    if (!publicPath) return undefined;
-
-    let pathOnly = publicPath;
-    try {
-      // если дали абсолютный URL — возьмём pathname
-      const u = new URL(publicPath);
-      pathOnly = u.pathname || publicPath;
-    } catch {
-      // not an absolute URL — ok
-    }
-
-    const m = pathOnly.match(/^\/?static\/(.+)$/i);
-    if (!m) return undefined;
-
-    const filename = m[1];
-    return path.join(process.cwd(), 'static', filename);
+    await Promise.all(list.map((p) => this.storage.deleteByPublicPath(p)));
   }
 }

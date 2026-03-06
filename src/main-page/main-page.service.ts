@@ -6,13 +6,16 @@ import {
 import { MainPageRepository } from './repositories/main-page.repository';
 import { MainPage, GalleryImage } from './models/main-page.model';
 import * as fs from 'fs';
-import * as path from 'path';
-import { randomUUID } from 'crypto';
 import imageSize from 'image-size';
+import { S3StorageService } from 'src/libs/common';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class MainPageService {
-  constructor(private readonly mainPageRepository: MainPageRepository) {}
+  constructor(
+    private readonly mainPageRepository: MainPageRepository,
+    private readonly storage: S3StorageService,
+  ) {}
 
   /** Получить единственную запись (синглтон) или null */
   private async getSingleton(): Promise<MainPage | null> {
@@ -198,37 +201,10 @@ export class MainPageService {
   }
 
   private async saveOne(file: Express.Multer.File): Promise<string> {
-    const ext = path.extname(file.originalname || '').toLowerCase() || '.bin';
-    const filename = `${randomUUID()}${ext}`;
-    const staticDir = path.resolve(process.cwd(), 'static');
-    await fs.promises.mkdir(staticDir, { recursive: true });
-
-    const fullPath = path.join(staticDir, filename);
-    const data =
-      file.buffer ??
-      (file.path ? await fs.promises.readFile(file.path) : undefined);
-    if (!data) throw new Error('Uploaded file has no data buffer');
-
-    await fs.promises.writeFile(fullPath, data);
-    return `/static/${filename}`;
+    return this.storage.uploadStatic(file, 'static');
   }
 
   private async deleteFile(publicPath?: string | null) {
-    if (!publicPath) return;
-
-    let pathOnly = publicPath;
-    try {
-      const u = new URL(publicPath);
-      pathOnly = u.pathname || publicPath;
-    } catch {
-      // not an absolute URL — ok
-    }
-
-    const m = pathOnly.match(/^\/?static\/(.+)$/i);
-    if (!m) return;
-
-    const filename = m[1];
-    const abs = path.join(process.cwd(), 'static', filename);
-    await fs.promises.unlink(abs).catch(() => {});
+    await this.storage.deleteByPublicPath(publicPath);
   }
 }

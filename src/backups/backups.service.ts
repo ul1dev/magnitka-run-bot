@@ -3,11 +3,13 @@ import { Cron } from '@nestjs/schedule';
 import { spawn } from 'child_process';
 import * as archiver from 'archiver';
 import { PassThrough } from 'stream';
-import axios from 'axios';
+import { S3StorageService } from 'src/libs/common';
 
 @Injectable()
 export class BackupsService {
   private readonly logger = new Logger(BackupsService.name);
+
+  constructor(private readonly storage: S3StorageService) {}
 
   // раз в 3 дня (в 00:00)
   @Cron('0 0 */3 * *')
@@ -63,8 +65,8 @@ export class BackupsService {
         .catch(reject);
     });
 
-    // Параллельно можно уже грузить archiveStream в Bunny
-    await this.uploadStreamToBunny(archiveStream, zipFileName);
+    const url = await this.storage.uploadBackupZip(archiveStream, zipFileName);
+    this.logger.log(`Backup uploaded: ${url}`);
 
     // Дождаться, что zip реально завершился
     await waitForArchiveFinish();
@@ -132,34 +134,5 @@ export class BackupsService {
     archive.pipe(pass);
 
     return { archiveStream: pass, waitForArchiveFinish: () => finished };
-  }
-
-  private async uploadStreamToBunny(
-    stream: NodeJS.ReadableStream,
-    fileName: string,
-  ) {
-    const storageZone = process.env.BUNNY_CDN_STORAGE_ZONE;
-    const accessKey = process.env.BUNNY_CDN_API_KEY;
-    const storageRegion = process.env.BUNNY_CDN_STORAGE_REGION || 'storage';
-
-    if (!storageZone || !accessKey) {
-      throw new Error(
-        'Bunny credentials not configured (BUNNY_CDN_STORAGE_ZONE, BUNNY_CDN_API_KEY)',
-      );
-    }
-
-    const url = `https://${storageRegion}.bunnycdn.com/${storageZone}/backups/${fileName}`;
-    this.logger.log(`Uploading "${fileName}" to Bunny...`);
-
-    await axios.put(url, stream, {
-      headers: {
-        AccessKey: accessKey,
-        'Content-Type': 'application/octet-stream',
-      },
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity,
-    });
-
-    this.logger.log(`Uploaded: ${url}`);
   }
 }

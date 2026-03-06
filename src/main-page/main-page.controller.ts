@@ -11,6 +11,7 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FileInterceptor, AnyFilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { MainPageService } from './main-page.service';
 import { AdminSecretGuard } from 'src/general/guards/admin-secret.guard';
 import { DeleteGalleryImagesDto } from './dto/delete-gallery-images.dto';
@@ -36,7 +37,7 @@ export class MainPageController {
   /** PUT /main-page/main-bg — заменить mainBgImg (или добавить если нет) */
   @Put('main-bg')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(FileInterceptor('mainBgImg'))
+  @UseInterceptors(FileInterceptor('mainBgImg', { storage: memoryStorage() }))
   replaceMainBg(@UploadedFile() file: Express.Multer.File) {
     return this.mainPageService.replaceMainBg(file);
   }
@@ -44,7 +45,7 @@ export class MainPageController {
   /** POST /main-page/first-line — добавить файлы в первую линию */
   @Post('first-line')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   addFirstLine(@UploadedFiles() files: Express.Multer.File[]) {
     return this.mainPageService.addFirstLineImages(files || []);
   }
@@ -52,7 +53,7 @@ export class MainPageController {
   /** POST /main-page/second-line — добавить файлы во вторую линию */
   @Post('second-line')
   @UseGuards(AdminSecretGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor({ storage: memoryStorage() }))
   addSecondLine(@UploadedFiles() files: Express.Multer.File[]) {
     return this.mainPageService.addSecondLineImages(files || []);
   }
